@@ -15,6 +15,7 @@ namespace SenMobServ.Models
 
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Phone> Phones { get; set; }
+        public DbSet<Role> Roles { get; set; }
     }
 }
 
