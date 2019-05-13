@@ -8,7 +8,7 @@ namespace SenMobServ.Models
     public class Role
     {
 
-        public enum Type
+        public enum RoleType
         {
            Admin,
            Receptionist,
@@ -17,7 +17,7 @@ namespace SenMobServ.Models
         }
 
         public int RoleId { get; set; }
-        public Type type { get; set; }
+        public RoleType Roletype { get; set; }
         public string Description { get; set; }
 
 

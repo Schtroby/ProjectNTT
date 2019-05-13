@@ -10,7 +10,6 @@ namespace SenMobServ.Models
         public int UserId { get; set; }
         public string Name { get; set; }
         public string email { get; set; }
-        public string RoleId { get; set; }
-
+       
     }
 }
