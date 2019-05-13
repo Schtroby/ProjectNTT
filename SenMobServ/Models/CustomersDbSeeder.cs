@@ -7,7 +7,7 @@ namespace SenMobServ.Models
 {
     public class CustomersDbSeeder
     {
-        public static void Initialize(CustomersDbContext context)
+        public static void Initialize(EntitiesDbContext context)
         {
             context.Database.EnsureCreated();
 

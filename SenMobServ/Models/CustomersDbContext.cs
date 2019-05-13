@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace SenMobServ.Models
 {
-    public class CustomersDbContext : DbContext
+    public class EntitiesDbContext : DbContext
     {
-        public CustomersDbContext(DbContextOptions<CustomersDbContext> options) : base(options)
+        public EntitiesDbContext(DbContextOptions<EntitiesDbContext> options) : base(options)
 
         {
         }

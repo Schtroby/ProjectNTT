@@ -23,7 +23,7 @@ namespace SenMobServ
                 var services = scope.ServiceProvider;
                 try
                 {
-                    var context = services.GetRequiredService<CustomersDbContext>();
+                    var context = services.GetRequiredService<EntitiesDbContext>();
                     CustomersDbSeeder.Initialize(context);
                 }
                 catch (Exception ex)
