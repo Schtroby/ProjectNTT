@@ -46,6 +46,8 @@ namespace SenMobServ
 
             app.UseHttpsRedirection();
             app.UseMvc();
+          
+
         }
     }
 }
