@@ -2,15 +2,17 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SenMobServ.Models;
 
 namespace SenMobServ.Migrations
 {
     [DbContext(typeof(EntitiesDbContext))]
-    partial class EntitiesDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190513204739_AddAllControllersTestedOK")]
+    partial class AddAllControllersTestedOK
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
