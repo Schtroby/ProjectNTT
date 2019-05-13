@@ -35,7 +35,7 @@ namespace SenMobServ.Migrations
                     b.ToTable("Customers");
                 });
 
-            modelBuilder.Entity("SenMobServ.Models.Order", b =>
+            modelBuilder.Entity("SenMobServ.Models.Reparation", b =>
                 {
                     b.Property<int>("OrderId")
                         .ValueGeneratedOnAdd()
