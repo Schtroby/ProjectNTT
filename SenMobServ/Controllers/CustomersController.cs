@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SenMobServ.Models;
+using SenMobServ.Services;
 
 namespace SenMobServ.Controllers
 {
@@ -14,29 +15,29 @@ namespace SenMobServ.Controllers
     public class CustomersController : ControllerBase
     {
 
-        private EntitiesDbContext context;
-        public CustomersController(EntitiesDbContext context)
+        private ICustomerService customerService;
+        public CustomersController(ICustomerService customerService)
         {
-            this.context = context;
+            this.customerService = customerService;
         }
         // GET: api/Customer
         [HttpGet]
         public IEnumerable<Customer> Get()
         {
-            return context.Customers;
+            return customerService.GetAll();
         }
 
         // GET: api/Customer/5
         [HttpGet("{id}", Name = "Get")]
         public IActionResult Get(int id)
         {
-            var existing = context.Customers.FirstOrDefault(custromer => custromer.CustomerId == id);
-            if (existing == null)
+            var found = customerService.GetById(id);
+            if (found == null)
             {
                 return NotFound();
             }
 
-            return Ok(existing);
+            return Ok(found);
         }
 
 
@@ -44,8 +45,7 @@ namespace SenMobServ.Controllers
         [HttpPost]
         public void Post([FromBody] Customer customer)
         {
-            context.Customers.Add(customer);
-            context.SaveChanges();
+            customerService.Create(customer);
         }
 
 
@@ -54,19 +54,8 @@ namespace SenMobServ.Controllers
         [HttpPut("{id}")]
         public IActionResult Put(int id, [FromBody] Customer customer)
         {
-            var existing = context.Customers.AsNoTracking().FirstOrDefault(c => c.CustomerId == id);
-            if (existing == null)
-            {
-                context.Customers.Add(customer);
-                context.SaveChanges();
-                return Ok(customer);
-
-            }
-
-            customer.CustomerId = id;
-            context.Customers.Update(customer);
-            context.SaveChanges();
-            return Ok(customer);
+            var result = customerService.Upsert(id, customer);
+            return Ok(result);
         }
 
 
@@ -75,14 +64,13 @@ namespace SenMobServ.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            var existing = context.Customers.FirstOrDefault(customer => customer.CustomerId == id);
-            if (existing == null)
+            var result = customerService.Delete(id);
+            if (result == null)
             {
                 return NotFound();
             }
-            context.Customers.Remove(existing);
-            context.SaveChanges();
-            return Ok();
+
+            return Ok(result);
         }
 
     }

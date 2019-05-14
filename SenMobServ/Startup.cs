@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SenMobServ.Models;
+using SenMobServ.Services;
 
 namespace SenMobServ
 {
@@ -29,6 +30,7 @@ namespace SenMobServ
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddDbContext<EntitiesDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddScoped<ICustomerService, CustomerService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -46,7 +48,7 @@ namespace SenMobServ
 
             app.UseHttpsRedirection();
             app.UseMvc();
-          
+
 
         }
     }
