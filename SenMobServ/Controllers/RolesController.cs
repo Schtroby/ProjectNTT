@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SenMobServ.Models;
+using SenMobServ.Services;
 
 namespace SenMobServ.Controllers
 {
@@ -14,16 +15,16 @@ namespace SenMobServ.Controllers
     public class RolesController : ControllerBase
     {
 
-        private EntitiesDbContext context;
-        public RolesController(EntitiesDbContext context)
+        private IRoleService roleService;
+        public RolesController(IRoleService roleService)
         {
-            this.context = context;
+            this.roleService = roleService;
         }
         // GET: api/Role
         [HttpGet]
         public IEnumerable<Role> Get()
         {
-            return context.Roles;
+            return roleService.GetAll();
         }
 
         // GET: api/Role/5
@@ -31,13 +32,13 @@ namespace SenMobServ.Controllers
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-            var existing = context.Roles.FirstOrDefault(role => role.RoleId == id);
-            if (existing == null)
+            var found = roleService.GetById(id);
+            if (found == null)
             {
                 return NotFound();
             }
 
-            return Ok(existing);
+            return Ok(found);
         }
 
 
@@ -45,8 +46,7 @@ namespace SenMobServ.Controllers
         [HttpPost]
         public void Post([FromBody] Role role)
         {
-            context.Roles.Add(role);
-            context.SaveChanges();
+            roleService.Create(role);
         }
 
 
@@ -55,19 +55,8 @@ namespace SenMobServ.Controllers
         [HttpPut("{id}")]
         public IActionResult Put(int id, [FromBody] Role role)
         {
-            var existing = context.Roles.AsNoTracking().FirstOrDefault(r => r.RoleId == id);
-            if (existing == null)
-            {
-                context.Roles.Add(role);
-                context.SaveChanges();
-                return Ok(role);
-
-            }
-
-            role.RoleId = id;
-            context.Roles.Update(role);
-            context.SaveChanges();
-            return Ok(role);
+            var result = roleService.Upsert(id, role);
+            return Ok(result);
         }
 
 
@@ -76,14 +65,13 @@ namespace SenMobServ.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            var existing = context.Roles.FirstOrDefault(role => role.RoleId == id);
-            if (existing == null)
+            var result = roleService.Delete(id);
+            if (result == null)
             {
                 return NotFound();
             }
-            context.Roles.Remove(existing);
-            context.SaveChanges();
-            return Ok();
+
+            return Ok(result);
         }
     }
 }
