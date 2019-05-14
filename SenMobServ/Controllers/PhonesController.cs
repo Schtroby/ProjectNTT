@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SenMobServ.Models;
+using SenMobServ.Services;
 
 namespace SenMobServ.Controllers
 {
@@ -13,16 +14,16 @@ namespace SenMobServ.Controllers
     [ApiController]
     public class PhonesController : ControllerBase
     {
-        private EntitiesDbContext context;
-        public PhonesController(EntitiesDbContext context)
+        private IPhoneService phoneService;
+        public PhonesController(IPhoneService phoneService)
         {
-            this.context = context;
+            this.phoneService = phoneService;
         }
         // GET: api/Phone
         [HttpGet]
         public IEnumerable<Phone> Get()
         {
-            return context.Phones;
+            return phoneService.GetAll();
         }
 
         // GET: api/Phone/5
@@ -30,13 +31,13 @@ namespace SenMobServ.Controllers
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-            var existing = context.Phones.FirstOrDefault(phone => phone.PhoneId == id);
-            if (existing == null)
+            var found = phoneService.GetById(id);
+            if (found == null)
             {
                 return NotFound();
             }
 
-            return Ok(existing);
+            return Ok(found);
         }
 
 
@@ -44,8 +45,7 @@ namespace SenMobServ.Controllers
         [HttpPost]
         public void Post([FromBody] Phone phone)
         {
-            context.Phones.Add(phone);
-            context.SaveChanges();
+            phoneService.Create(phone);
         }
 
 
@@ -54,19 +54,8 @@ namespace SenMobServ.Controllers
         [HttpPut("{id}")]
         public IActionResult Put(int id, [FromBody] Phone phone)
         {
-            var existing = context.Phones.AsNoTracking().FirstOrDefault(p => p.PhoneId == id);
-            if (existing == null)
-            {
-                context.Phones.Add(phone);
-                context.SaveChanges();
-                return Ok(phone);
-
-            }
-
-            phone.PhoneId = id;
-            context.Phones.Update(phone);
-            context.SaveChanges();
-            return Ok(phone);
+            var result = phoneService.Upsert(id, phone);
+            return Ok(result);
         }
 
 
@@ -75,14 +64,13 @@ namespace SenMobServ.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            var existing = context.Phones.FirstOrDefault(phone => phone.PhoneId == id);
-            if (existing == null)
+            var result = phoneService.Delete(id);
+            if (result == null)
             {
                 return NotFound();
             }
-            context.Phones.Remove(existing);
-            context.SaveChanges();
-            return Ok();
+
+            return Ok(result);
         }
 
     }
