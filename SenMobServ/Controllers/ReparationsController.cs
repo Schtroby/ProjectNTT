@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SenMobServ.Models;
+using SenMobServ.Services;
 
 namespace SenMobServ.Controllers
 {
@@ -13,16 +14,16 @@ namespace SenMobServ.Controllers
     [ApiController]
     public class ReparationsController : ControllerBase
     {
-        private EntitiesDbContext context;
-        public ReparationsController(EntitiesDbContext context)
+        private IReparationService reparationService;
+        public ReparationsController(IReparationService reparationService)
         {
-            this.context = context;
+            this.reparationService = reparationService;
         }
         // GET: api/Reparation
         [HttpGet]
         public IEnumerable<Reparation> Get()
         {
-            return context.Reparations;
+            return reparationService.GetAll();
         }
 
         // GET: api/Reparation/5
@@ -30,13 +31,13 @@ namespace SenMobServ.Controllers
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-            var existing = context.Reparations.FirstOrDefault(reparation => reparation.ReparationId == id);
-            if (existing == null)
+            var found = reparationService.GetById(id);
+            if (found == null)
             {
                 return NotFound();
             }
 
-            return Ok(existing);
+            return Ok(found);
         }
 
 
@@ -44,8 +45,7 @@ namespace SenMobServ.Controllers
         [HttpPost]
         public void Post([FromBody] Reparation reparation)
         {
-            context.Reparations.Add(reparation);
-            context.SaveChanges();
+            reparationService.Create(reparation);
         }
 
 
@@ -54,19 +54,8 @@ namespace SenMobServ.Controllers
         [HttpPut("{id}")]
         public IActionResult Put(int id, [FromBody] Reparation reparation)
         {
-            var existing = context.Reparations.AsNoTracking().FirstOrDefault(r => r.ReparationId == id);
-            if (existing == null)
-            {
-                context.Reparations.Add(reparation);
-                context.SaveChanges();
-                return Ok(reparation);
-
-            }
-
-            reparation.ReparationId = id;
-            context.Reparations.Update(reparation);
-            context.SaveChanges();
-            return Ok(reparation);
+            var result = reparationService.Upsert(id, reparation);
+            return Ok(result);
         }
 
 
@@ -75,14 +64,13 @@ namespace SenMobServ.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            var existing = context.Reparations.FirstOrDefault(reparation => reparation.ReparationId == id);
-            if (existing == null)
+            var result = reparationService.Delete(id);
+            if (result == null)
             {
                 return NotFound();
             }
-            context.Reparations.Remove(existing);
-            context.SaveChanges();
-            return Ok();
+
+            return Ok(result);
         }
 
     }

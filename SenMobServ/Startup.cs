@@ -33,6 +33,7 @@ namespace SenMobServ
             services.AddScoped<ICustomerService, CustomerService>();
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IPhoneService, PhoneService>();
+            services.AddScoped<IReparationService, ReparationService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
