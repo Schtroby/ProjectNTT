@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SenMobServ.Models;
+using SenMobServ.Services;
 
 namespace SenMobServ.Controllers
 {
@@ -13,16 +14,17 @@ namespace SenMobServ.Controllers
     [ApiController]
     public class OrdersController : ControllerBase
     {
-        private EntitiesDbContext context;
-        public OrdersController(EntitiesDbContext context)
+        
+        private IOrderService orderService;
+        public OrdersController(IOrderService orderService)
         {
-            this.context = context;
+            this.orderService = orderService;
         }
         // GET: api/Order
         [HttpGet]
         public IEnumerable<Order> Get()
         {
-            return context.Orders;
+            return orderService.GetAll();
         }
 
         // GET: api/Order/5
@@ -30,13 +32,13 @@ namespace SenMobServ.Controllers
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-            var existing = context.Orders.FirstOrDefault(order => order.OrderId == id);
-            if (existing == null)
+            var found = orderService.GetById(id);
+            if (found == null)
             {
                 return NotFound();
             }
 
-            return Ok(existing);
+            return Ok(found);
         }
 
 
@@ -44,8 +46,7 @@ namespace SenMobServ.Controllers
         [HttpPost]
         public void Post([FromBody] Order order)
         {
-            context.Orders.Add(order);
-            context.SaveChanges();
+            orderService.Create(order);
         }
 
 
@@ -54,19 +55,8 @@ namespace SenMobServ.Controllers
         [HttpPut("{id}")]
         public IActionResult Put(int id, [FromBody] Order order)
         {
-            var existing = context.Orders.AsNoTracking().FirstOrDefault(o => o.OrderId == id);
-            if (existing == null)
-            {
-                context.Orders.Add(order);
-                context.SaveChanges();
-                return Ok(order);
-
-            }
-
-            order.OrderId = id;
-            context.Orders.Update(order);
-            context.SaveChanges();
-            return Ok(order);
+            var result = orderService.Upsert(id, order);
+            return Ok(result);
         }
 
 
@@ -75,14 +65,13 @@ namespace SenMobServ.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            var existing = context.Orders.FirstOrDefault(order => order.OrderId == id);
-            if (existing == null)
+            var result = orderService.Delete(id);
+            if (result == null)
             {
                 return NotFound();
             }
-            context.Orders.Remove(existing);
-            context.SaveChanges();
-            return Ok();
+
+            return Ok(result);
         }
     }
 }
