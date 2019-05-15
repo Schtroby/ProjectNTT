@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SenMobServ.DTOs;
 using SenMobServ.Models;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace SenMobServ.Services
     public interface IReparationService
     {
 
-        IEnumerable<Reparation> GetAll();
+        IEnumerable<ReparationGetDTO> GetAll();
 
         Reparation GetById(int id);
 
@@ -52,9 +53,10 @@ namespace SenMobServ.Services
             return existing;
         }
 
-        public IEnumerable<Reparation> GetAll()
+        public IEnumerable<ReparationGetDTO> GetAll()
         {
-            return context.Reparations;
+            IQueryable<Reparation> result = context.Reparations;
+            return result.Select(r => ReparationGetDTO.FromReparation(r));
         }
 
         public Reparation GetById(int id)

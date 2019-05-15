@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SenMobServ.DTOs;
 using SenMobServ.Models;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace SenMobServ.Services
     public interface IPhoneService
     {
 
-        IEnumerable<Phone> GetAll();
+        IEnumerable<PhoneGetDTO> GetAll();
 
         Phone GetById(int id);
 
@@ -49,9 +50,10 @@ namespace SenMobServ.Services
             return existing;
         }
 
-        public IEnumerable<Phone> GetAll()
+        public IEnumerable<PhoneGetDTO> GetAll()
         {
-            return context.Phones;
+            IQueryable<Phone> result = context.Phones;
+            return result.Select(p => PhoneGetDTO.FromPhone(p));
         }
 
         public Phone GetById(int id)

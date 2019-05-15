@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SenMobServ.DTOs;
 using SenMobServ.Models;
 using SenMobServ.Services;
 
@@ -21,7 +22,7 @@ namespace SenMobServ.Controllers
         }
         // GET: api/Phone
         [HttpGet]
-        public IEnumerable<Phone> Get()
+        public IEnumerable<PhoneGetDTO> Get()
         {
             return phoneService.GetAll();
         }

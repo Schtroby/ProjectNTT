@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SenMobServ.DTOs;
 using SenMobServ.Models;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace SenMobServ.Services
     public interface ICustomerService
     {
 
-        IEnumerable<Customer> GetAll();
+        IEnumerable<CustomerGetDTO> GetAll();
 
         Customer GetById(int id);
 
@@ -51,9 +52,17 @@ namespace SenMobServ.Services
             return existing;
         }
 
-        public IEnumerable<Customer> GetAll()
+        public IEnumerable<CustomerGetDTO> GetAll()
         {
-            return context.Customers;
+            IQueryable<Customer> result = context.Customers;
+
+            //return result.Select(c => new CustomerGetDTO {
+            //    Name = c.Name,
+            //    PhoneNumber = c.PhoneNumber,
+            //    Email = c.Email
+            //}
+            return result.Select(c => CustomerGetDTO.FromCustomer(c));
+            
         }
 
         public Customer GetById(int id)
